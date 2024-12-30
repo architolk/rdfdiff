@@ -3,4 +3,5 @@
 
 ex:jan a ex:Persoon;
   rdfs:label "Jan";
+  rdfs:seeAlso [ rdfs:seeAlso [rdfs:label "Dirk"]]
 .

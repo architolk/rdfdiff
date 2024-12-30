@@ -22,8 +22,16 @@ import org.slf4j.LoggerFactory;
 
 public class Compare {
 
-  static final String QUERY_UNIQUE1 = "INSERT { GRAPH <urn:unique1> {?s?p?o}} WHERE {GRAPH <urn:model1> {?s?p?o} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p?o}}}";
-  static final String QUERY_UNIQUE2 = "INSERT { GRAPH <urn:unique2> {?s?p?o}} WHERE {GRAPH <urn:model2> {?s?p?o} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o}}}";
+  // Works good for 'normal' triples and triples with a blank node structure not more than two levels deep
+
+  static final String QUERY_UNIQUE1 = "INSERT { GRAPH <urn:unique1> {?s?p?o.?o?op?oo.?oo?oop?ooo}} WHERE {" +
+          "{GRAPH <urn:model1> {?s?p?o FILTER(!isBlank(?s) && !isBlank(?o))} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p?o}}} UNION" +
+          "{GRAPH <urn:model1> {?s?p?o.?o?op?oo FILTER(!isBlank(?s) && isBlank(?o) && !isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p?o2.?o2?op?oo}}} UNION" +
+          "{GRAPH <urn:model1> {?s?p?o.?o?op?oo.?oo?oop?ooo FILTER(isBlank(?o) && isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p?o2.?o2?op?oo2.?oo2?oop?ooo}}}}";
+  static final String QUERY_UNIQUE2 = "INSERT { GRAPH <urn:unique2> {?s?p?o.?o?op?oo.?oo?oop?ooo}} WHERE {" +
+          "{GRAPH <urn:model2> {?s?p?o FILTER(!isBlank(?s) && !isBlank(?o))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o}}} UNION" +
+          "{GRAPH <urn:model2> {?s?p?o.?o?op?oo FILTER(!isBlank(?s) && isBlank(?o) && !isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o2.?o2?op?oo}}} UNION" +
+          "{GRAPH <urn:model2> {?s?p?o.?o?op?oo.?oo?oop?ooo FILTER(isBlank(?o) && isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o2.?o2?op?oo2.?oo2?oop?ooo}}}}";
 
   private static final Logger LOG = LoggerFactory.getLogger(Compare.class);
 
