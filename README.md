@@ -10,6 +10,8 @@ The first and second files will be compared. These files may be any RDF serializ
 - `compare_1.ttl` will contain all triples present in first.ttl and not in second.ttl
 - `compare_2.ttl` will contain all triples present in second.ttl and not in first.ttl
 
+As blank nodes are always different between files, blank nodes are considered "complex structured values" and a cluster of blank nodes are considered as a whole (so they are only different as objects of a triple with a non-blank node as subject).
+
 If the option `-c` is used, the output of all resources present in only of the files will be send to standard output (making it easier to spot differences in the URI minting between files).
 
 See `rdfdiff.sh` for an example, using the data in de folder `data`.
