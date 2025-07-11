@@ -34,8 +34,8 @@ public class Compare {
           "{GRAPH <urn:model2> {?s?p?o FILTER(!isBlank(?s) && !isBlank(?o))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o}}} UNION" +
           "{GRAPH <urn:model2> {?s?p?o.?o?op?oo FILTER(!isBlank(?s) && isBlank(?o) && !isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o2.?o2?op?oo}}} UNION" +
           "{GRAPH <urn:model2> {?s?p?o.?o?op?oo.?oo?oop?ooo FILTER(isBlank(?o) && isBlank(?oo))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p?o2.?o2?op?oo2.?oo2?oop?ooo}}}}";
-  static final String QUERY_PRESENT1 = "SELECT DISTINCT ?s WHERE { GRAPH <urn:unique1> {?s?p?o FILTER (isIRI(?s))} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p2?o2}}}";
-  static final String QUERY_PRESENT2 = "SELECT DISTINCT ?s WHERE { GRAPH <urn:unique2> {?s?p?o FILTER (isIRI(?s))} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p2?o2}}}";
+  static final String QUERY_PRESENT1 = "SELECT ?s (min(?sl) as ?l) WHERE { GRAPH <urn:unique1> {?s?p?o FILTER (isIRI(?s)) OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?sl}} FILTER NOT EXISTS {GRAPH <urn:model2> {?s?p2?o2}}} GROUP BY ?s";
+  static final String QUERY_PRESENT2 = "SELECT ?s (min(?sl) as ?l) WHERE { GRAPH <urn:unique2> {?s?p?o FILTER (isIRI(?s)) OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?sl}} FILTER NOT EXISTS {GRAPH <urn:model1> {?s?p2?o2}}} GROUP BY ?s";
 
   private static final Logger LOG = LoggerFactory.getLogger(Compare.class);
 
@@ -48,7 +48,11 @@ public class Compare {
     ResultSet items = QueryExecution.dataset(dataset).query(query).build().execSelect();
     for (; items.hasNext() ;) {
       QuerySolution row = items.nextSolution();
-      System.out.println(row.get("s"));
+      System.out.print(row.get("s"));
+      if (row.contains("l")) {
+        System.out.print(" \""); System.out.print(row.get("l")); System.out.print("\"");
+      }
+      System.out.println("");
     }
     System.out.println(".");
   }
